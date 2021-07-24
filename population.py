@@ -12,7 +12,7 @@ from motion import get_motion_parameters
 from utils import check_folder
 #population class to hold age related stats
 class Population():
-    def __init__(self, mean_ageInput, max_age):
+    def __init__(self, mean_ageInput, max_ageInput):
         self.mean_age = mean_ageInput
         self.max_age = max_ageInput
     #Population getters

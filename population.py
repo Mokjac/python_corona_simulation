@@ -22,7 +22,7 @@ class Population():
     def getmax_age(self):
         return self.max_age
       
-    def getstd_age(self)
+    def getstd_age(self):
         return (self.max_age - self.mean_age) / 3
     
 #Population setters    

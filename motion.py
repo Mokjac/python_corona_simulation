@@ -4,7 +4,6 @@ and related computations
 '''
 
 import numpy as np
-from environment import Environment
 
 def update_positions(population):
     '''update positions of all people
@@ -138,7 +137,7 @@ def update_randoms(population, pop_size, speed=0.01, heading_update_chance=0.02,
     return population
 
 
-def get_motion_parameters(env):
+def get_motion_parameters(xmin, ymin, xmax, ymax):
     '''gets destination center and wander ranges
 
     Function that returns geometric parameters of the destination
@@ -151,10 +150,10 @@ def get_motion_parameters(env):
 
     '''
 
-    x_center = env.getxmin() + ((env.getxmax() - env.getxmin()) / 2)
-    y_center = env.getymin() + ((env.getymax() - env.getymin()) / 2)
+    x_center = xmin + ((xmax - xmin) / 2)
+    y_center = ymin + ((ymax - ymin) / 2)
 
-    x_wander = (env.getxmax() - env.getxmin()) / 2
-    y_wander = (env.getymax() - env.getymin()) / 2
+    x_wander = (xmax - xmin) / 2
+    y_wander = (ymax - ymin) / 2
 
     return x_center, y_center, x_wander, y_wander

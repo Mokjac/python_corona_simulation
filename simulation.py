@@ -25,7 +25,7 @@ class Simulation():
     #TODO: if lockdown or otherwise stopped: destination -1 means no motion
     def __init__(self, *args, **kwargs):
         if Simulation.__instance != None:
-            raise Exception("This class is a singleton!")
+            raise Exception("This class is a singleton!, only 1 instance is allowed")
         else:
             Simulation.__instance = self
             #load default config data

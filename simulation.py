@@ -1,6 +1,7 @@
 import os
 import sys
 
+from abc import ABC, abstractmethod
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -20,25 +21,10 @@ from visualiser import build_fig, draw_tstep, set_style
 #set seed for reproducibility
 #np.random.seed(100)
 
-class Simulation():
+class Simulation(ABC):
     #TODO: if lockdown or otherwise stopped: destination -1 means no motion
     def __init__(self, *args, **kwargs):
-        #load default config data
-        self.Config = Configuration()
-        self.frame = 0
-
-        #initialize default population
-        self.population_init()
-
-        self.pop_tracker = Population_trackers()
-
-        #initalise destinations vector
-        self.destinations = initialize_destination_matrix(self.Config.pop_size, 1)
-
-        self.fig, self.spec, self.ax1, self.ax2 = build_fig(self.Config)
-
-        #set_style(self.Config)
-
+        pass
 
     def population_init(self):
         '''(re-)initializes population'''
@@ -187,13 +173,68 @@ dead: %i, of total: %i' %(self.frame, self.pop_tracker.susceptible[-1], self.pop
         print('total infectious: %i' %len(self.population[(self.population[:,6] == 1) |
                                                           (self.population[:,6] == 4)]))
         print('total unaffected: %i' %len(self.population[self.population[:,6] == 0]))
+        
+    def setColourBlindMode(self, cb):
+        #set colorblind mode if needed
+        #set colorblind type (default deuteranopia)
+        sim.Config.colorblind_type = 'deuteranopia'
+        if(cb == 'y' || cb =='Y'):
+            sim.Config.colorblind_mode = True
+        else:
+            sim.Config.colorblind_mode = False
+                
+    def simulationSetup(self)
+        self.frame = 0
 
-
-
+        #initialize default population
+        self.population_init()
+        
+        self.pop_tracker = Population_trackers()
+        #initalise destinations vector
+        self.destinations = initialize_destination_matrix(self.Config.pop_size, 1)
+        self.fig, self.spec, self.ax1, self.ax2 = build_fig(self.Config)
+        #set_style(self.Config)
+        
+class confRedInt(Simulation):
+    #load config data
+    self.Config = set_reduced_interaction()
+    self.simulationSetup()
+    
+class confLock(Simulation):
+    #load config data
+    self.Config.set_lockdown(lockdown_percentage = 0.1, lockdown_compliance = 0.95)
+    self.simulationSetup()    
+class confSelf(Simulation):
+    #load config data
+    self.Config.set_self_isolation(self_isolate_proportion = 0.9, isolation_bounds = [0.02, 0.02, 0.09, 0.98], traveling_infects=False)
+    self.simulationSetup()
+class confUsual(Simulation):
+    #load config data
+    self.Config = Configuration(*args, **kwargs)
+    self.simulationSetup() 
+    
 if __name__ == '__main__':
 
     #initialize
-    sim = Simulation()
+    #get user inputs
+    print ("Input 'Y' to turn on colour blind mode (deuteranopia).")
+    colourBlindMode = input("Any other input will keep colourblind mode off.")
+    
+    print ("input 1 for business as usual")
+    print ("input 2 for reduced interaction")
+    print ("input 3 for lockdown scenario")
+    print ("input 4 for self-isolation scenario")
+    lockdownState = input("Any other input will assume business as usual.")
+    
+    if lockdownState == 1:          #set reduced interaction scenario
+        sim = confRedInt()
+    elif lockdownState == 2:        #set lockdown scenario
+        sim = confLock()
+    elif lockdownState == 3:    #set self-isolation scenario
+        sim = confSelf()
+    else:                       #set business as usual scenario
+        sim = confUsual()
+    
 
     #set number of simulation steps
     sim.Config.simulation_steps = 20000

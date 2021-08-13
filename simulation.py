@@ -50,8 +50,9 @@ class Simulation():
 
     def population_init(self):
         '''(re-)initializes population'''
-        self.population = initialize_population(self.Config, Population(self.Config.mean_age, self.Config.max_age),
-                                                self.Config.xbounds, self.Config.ybounds)
+        self.population = initialize_population(self.Config, self.Config.mean_age,
+                                                self.Config.max_age, self.Config.xbounds,
+                                                self.Config.ybounds)
 
     def tstep(self):
         '''

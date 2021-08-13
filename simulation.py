@@ -178,14 +178,15 @@ dead: %i, of total: %i' %(self.frame, self.pop_tracker.susceptible[-1], self.pop
         #set colorblind mode if needed
         #set colorblind type (default deuteranopia)
         sim.Config.colorblind_type = 'deuteranopia'
-        if(cb == 'y' || cb =='Y'):
+        if(cb == 'y' or cb =='Y'):
             sim.Config.colorblind_mode = True
         else:
             sim.Config.colorblind_mode = False
                 
-    def simulationSetup(self)
+    def simulationSetup(self):
+        self.Config = Configuration()
         self.frame = 0
-
+    
         #initialize default population
         self.population_init()
         
@@ -197,21 +198,24 @@ dead: %i, of total: %i' %(self.frame, self.pop_tracker.susceptible[-1], self.pop
         
 class confRedInt(Simulation):
     #load config data
-    self.Config = set_reduced_interaction()
-    self.simulationSetup()
+     def __init__(self):
+        self.Config.set_reduced_interaction()
+        self.simulationSetup()
     
 class confLock(Simulation):
     #load config data
-    self.Config.set_lockdown(lockdown_percentage = 0.1, lockdown_compliance = 0.95)
-    self.simulationSetup()    
+    def __init__(self):
+        self.Config.set_lockdown(lockdown_percentage = 0.1, lockdown_compliance = 0.95)
+        self.simulationSetup()    
 class confSelf(Simulation):
     #load config data
-    self.Config.set_self_isolation(self_isolate_proportion = 0.9, isolation_bounds = [0.02, 0.02, 0.09, 0.98], traveling_infects=False)
-    self.simulationSetup()
+    def __init__(self):
+        self.Config.set_self_isolation(self_isolate_proportion = 0.9, isolation_bounds = [0.02, 0.02, 0.09, 0.98], traveling_infects=False)
+        self.simulationSetup()
 class confUsual(Simulation):
     #load config data
-    self.Config = Configuration(*args, **kwargs)
-    self.simulationSetup() 
+    def __init__(self):
+        self.simulationSetup() 
     
 if __name__ == '__main__':
 
@@ -234,7 +238,6 @@ if __name__ == '__main__':
         sim = confSelf()
     else:                       #set business as usual scenario
         sim = confUsual()
-    
 
     #set number of simulation steps
     sim.Config.simulation_steps = 20000

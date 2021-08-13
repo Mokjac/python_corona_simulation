@@ -15,3 +15,4 @@ note: CuPy created major slowdowns, likely due to the large number of relatively
 - [ ] Implement S-I-R modeling to compare to agent-based approach
 - [ ] Add scenario where the elderly are quarantined first when infections happen (u/ColCrabs & u/rataktaktaruken)
 - [X] Speed up plotting
+

@@ -14,7 +14,7 @@ get_motion_parameters
 from path_planning import go_to_location, set_destination, check_at_destination,\
 keep_at_destination, reset_destinations
 from population import initialize_population, initialize_destination_matrix,\
-set_destination_bounds, save_data, save_population, Population_trackers
+set_destination_bounds, save_data, save_population, Population_trackers, Population
 from visualiser import build_fig, draw_tstep, set_style, plot_sir
 
 #set seed for reproducibility
@@ -53,7 +53,6 @@ class Simulation():
         self.population = initialize_population(self.Config, self.Config.mean_age,
                                                 self.Config.max_age, self.Config.xbounds,
                                                 self.Config.ybounds)
-
 
     def tstep(self):
         '''

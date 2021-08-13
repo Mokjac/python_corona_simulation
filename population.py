@@ -10,8 +10,30 @@ import numpy as np
 
 from motion import get_motion_parameters
 from utils import check_folder
+#population class to hold age related stats
+class Population():
+    def __init__(self, mean_ageInput, max_age):
+        self.mean_age = mean_ageInput
+        self.max_age = max_ageInput
+    #Population getters
+    def getmean_age(self):
+        return self.mean_age
+      
+    def getmax_age(self):
+        return self.max_age
+      
+    def getstd_age(self):
+        return (self.max_age - self.mean_age) / 3
+    
+#Population setters    
+def setmean_age(self, mean_ageInput):
+        self.mean_age = mean_ageInput
 
-def initialize_population(Config, mean_age=45, max_age=105,
+def setmax_age(self, max_ageInput):
+        self.max_age = max_ageInput
+      
+      
+def initialize_population(Config, popu,
                           xbounds=[0, 1], ybounds=[0, 1]):
     '''initialized the population for the simulation
 
@@ -73,13 +95,13 @@ def initialize_population(Config, mean_age=45, max_age=105,
     population[:,5] = np.random.normal(Config.speed, Config.speed / 3)
 
     #initalize ages
-    std_age = (max_age - mean_age) / 3
-    population[:,7] = np.int32(np.random.normal(loc = mean_age, 
+    std_age = popu.getstd_age()
+    population[:,7] = np.int32(np.random.normal(loc = popu.getmean_age(), 
                                                 scale = std_age, 
                                                 size=(Config.pop_size,)))
 
     population[:,7] = np.clip(population[:,7], a_min = 0, 
-                              a_max = max_age) #clip those younger than 0 years
+                              a_max = popu.getmax_age()) #clip those younger than 0 years
 
     #build recovery_vector
     population[:,9] = np.random.normal(loc = 0.5, scale = 0.5 / 3, size=(Config.pop_size,))
@@ -108,8 +130,7 @@ def initialize_destination_matrix(pop_size, total_destinations):
     return destinations
 
 
-def set_destination_bounds(population, destinations, xmin, ymin, 
-                           xmax, ymax, dest_no=1, teleport=True):
+def set_destination_bounds(population, destinations, env, dest_no=1, teleport=True):
     '''teleports all persons within limits
 
     Function that takes the population and coordinates,
@@ -137,12 +158,11 @@ def set_destination_bounds(population, destinations, xmin, ymin,
 
     #teleport
     if teleport:
-        population[:,1] = np.random.uniform(low = xmin, high = xmax, size = len(population))
-        population[:,2] = np.random.uniform(low = ymin, high = ymax, size = len(population))
+        population[:,1] = np.random.uniform(low = env.getxmin(), high = env.getxmax(), size = len(population))
+        population[:,2] = np.random.uniform(low = env.getymin(), high = env.getymax(), size = len(population))
 
     #get parameters
-    x_center, y_center, x_wander, y_wander = get_motion_parameters(xmin, ymin, 
-                                                                   xmax, ymax)
+    x_center, y_center, x_wander, y_wander = get_motion_parameters(env.getxminyminxmaxymax())
 
     #set destination centers
     destinations[:,(dest_no - 1) * 2] = x_center

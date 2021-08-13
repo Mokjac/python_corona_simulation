@@ -21,27 +21,34 @@ from visualiser import build_fig, draw_tstep, set_style
 #np.random.seed(100)
 
 class Simulation():
+    __instance = None
     #TODO: if lockdown or otherwise stopped: destination -1 means no motion
     def __init__(self, *args, **kwargs):
-        #load default config data
-        self.Config = Configuration()
-        self.frame = 0
+        if Simulation.__instance != None:
+            raise Exception("This class is a singleton!")
+        else:
+            Simulation.__instance = self
+            #load default config data
+            self.Config = Configuration()
+            self.frame = 0
 
-        #initialize default population
-        self.population_init()
+            #initialize default population
+            self.population_init()
 
-        self.pop_tracker = Population_trackers()
+            self.pop_tracker = Population_trackers()
 
-        #initalise destinations vector
-        self.destinations = initialize_destination_matrix(self.Config.pop_size, 1)
+            #initalise destinations vector
+            self.destinations = initialize_destination_matrix(self.Config.pop_size, 1)
 
-        self.fig, self.spec, self.ax1, self.ax2 = build_fig(self.Config)
+            self.fig, self.spec, self.ax1, self.ax2 = build_fig(self.Config)
 
-        #set_style(self.Config)
+            #set_style(self.Config)
 
 
     def population_init(self):
         '''(re-)initializes population'''
+        if Simulation.__instance == None:
+            Simulation()
         self.population = initialize_population(self.Config, self.Config.mean_age, 
                                                 self.Config.max_age, self.Config.xbounds, 
                                                 self.Config.ybounds)
@@ -157,7 +164,8 @@ dead: %i, of total: %i' %(self.frame, self.pop_tracker.susceptible[-1], self.pop
 
     def run(self):
         '''run simulation'''
-
+        if Simulation.__instance == None:
+            Simulation()
         i = 0
         
         while i < self.Config.simulation_steps:

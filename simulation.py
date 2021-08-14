@@ -1,6 +1,8 @@
 import os
 import sys
 
+from abc import ABC, abstractmethod
+
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
@@ -20,7 +22,7 @@ from visualiser import build_fig, draw_tstep, set_style
 #set seed for reproducibility
 #np.random.seed(100)
 
-class Simulation():
+class Simulation(ABC):
     #TODO: if lockdown or otherwise stopped: destination -1 means no motion
     def __init__(self, *args, **kwargs):
         #load default config data
@@ -189,11 +191,69 @@ dead: %i, of total: %i' %(self.frame, self.pop_tracker.susceptible[-1], self.pop
         print('total unaffected: %i' %len(self.population[self.population[:,6] == 0]))
 
 
+class manualSim(Simulation):
+    def population_init(self):
+        '''(re-)initializes population'''
+        print("Enter mean age:")
+        meanAgeInput = int(input())
+        print("Enter max age:")
+        maxAgeInput = int(input())
+        self.population = initialize_population(self.Config, meanAgeInput, 
+                                                maxAgeInput, self.Config.xbounds, 
+                                                self.Config.ybounds)
+    def run(self):
+        '''run simulation'''
 
+        i = 0
+        print("Enter simulation steps:")
+        simulation_steps = int(input())
+        while i < simulation_steps:
+            print(i)
+            try:
+                sim.tstep()
+            except KeyboardInterrupt:
+                print('\nCTRL-C caught, exiting')
+                sys.exit(1)
+
+            #check whether to end if no infecious persons remain.
+            #check if self.frame is above some threshold to prevent early breaking when simulation
+            #starts initially with no infections.
+            if self.Config.endif_no_infections and self.frame >= 500:
+                if len(self.population[(self.population[:,6] == 1) | 
+                                       (self.population[:,6] == 4)]) == 0:
+                    i = self.Config.simulation_steps
+
+        if self.Config.save_data:
+            save_data(self.population, self.pop_tracker)
+
+        #report outcomes
+        print('\n-----stopping-----\n')
+        print('total timesteps taken: %i' %self.frame)
+        print('total dead: %i' %len(self.population[self.population[:,6] == 3]))
+        print('total recovered: %i' %len(self.population[self.population[:,6] == 2]))
+        print('total infected: %i' %len(self.population[self.population[:,6] == 1]))
+        print('total infectious: %i' %len(self.population[(self.population[:,6] == 1) |
+                                                          (self.population[:,6] == 4)]))
+        print('total unaffected: %i' %len(self.population[self.population[:,6] == 0]))
+
+class textSim(Simulation):
+    def run(self):
+        print("Not yet implimented")
 if __name__ == '__main__':
 
     #initialize
-    sim = Simulation()
+
+    print("Enter type of simulation:")
+    print("1 for manual")
+    print("2 for txt input (not yetimplimented)")
+    print("any other input for default settings")
+    simType = int(input())
+    if(simType == 1):
+        sim = Simulation()  
+    elif (simType == 2):
+        sim = textSim()     
+    else:
+        sim = manualSim()
 
     #set number of simulation steps
     sim.Config.simulation_steps = 20000
@@ -220,4 +280,5 @@ if __name__ == '__main__':
     #sim.population_init() #reinitialize population to enforce new roaming bounds
 
     #run, hold CTRL+C in terminal to end scenario early
+
     sim.run()

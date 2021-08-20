@@ -2,7 +2,6 @@
 this file contains functions that help initialize the population
 parameters for the simulation
 '''
-
 from glob import glob
 import os
 
@@ -10,6 +9,26 @@ import numpy as np
 
 from motion import get_motion_parameters
 from utils import check_folder
+
+from collections.abc import Iterable, Iterator
+
+#The common interface for all iterators.
+class populationIterator():
+  _position: int = None
+  def __init__(self, inputArray) -> None:
+        self._array = inputArray
+  def __next__(self):
+        """
+        The __next__() method must return the next item in the sequence. On
+        reaching the end, and in subsequent calls, it must raise StopIteration.
+        """
+        try:
+            value = self._array[self._position]
+            self._position += 1
+        except IndexError:
+            raise StopIteration()
+
+        return value
 
 def initialize_population(Config, mean_age=45, max_age=105,
                           xbounds=[0, 1], ybounds=[0, 1]):
@@ -235,3 +254,4 @@ class Population_trackers():
             self.susceptible.append(pop_size - (self.infectious[-1] +
                                                 self.recovered[-1] +
                                                 self.fatalities[-1]))
+            

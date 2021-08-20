@@ -11,7 +11,55 @@ import numpy as np
 from motion import get_motion_parameters
 from utils import check_folder
 #population class to hold age related stats
+
+class People():
+        #initialize random coordinates
+    xCoordinate 
+    yCoordinate 
+    xHeading 
+    yHeading 
+    speed
+    state
+    age
+    infectionAge
+    recoveryStatus
+    destinationStatus
+    destinationMethod
+    waderRangeX
+    WanderRangeY
+    
+    def __init__(Config, popu, xbounds=[0, 1], ybounds=[0, 1]):
+        xCoordinate = np.random.uniform(low = xbounds[0] + 0.05, high = xbounds[1] - 0.05, 
+                                           size = (Config.pop_size,))
+        yCoordinate = np.random.uniform(low = ybounds[0] + 0.05, high = ybounds[1] - 0.05, 
+                                            size=(Config.pop_size,))
+
+        #initialize random headings -1 to 1
+        xHeading = np.random.normal(loc = 0, scale = 1/3, 
+                                           size=(Config.pop_size,))
+        yHeading = np.random.normal(loc = 0, scale = 1/3, 
+                                           size=(Config.pop_size,))
+
+        #initialize random speeds
+        speed = np.random.normal(Config.speed, Config.speed / 3)
+
+        #initalize ages
+        std_age = popu.getstd_age()
+        population[:,7] = np.int32(np.random.normal(loc = popu.getmean_age(), 
+                                                    scale = std_age, 
+                                                    size=(Config.pop_size,)))
+
+        population[:,7] = np.clip(population[:,7], a_min = 0, 
+                                  a_max = popu.getmax_age()) #clip those younger than 0 years
+
+        #build recovery_vector
+        population[:,9] = np.random.normal(loc = 0.5, scale = 0.5 / 3, size=(Config.pop_size,))
+
 class Population():
+        #initialize population matrix
+    popul[] = np.([People], [People])
+    #initalize unique IDs
+   
     def __init__(self, mean_ageInput, max_age):
         self.mean_age = mean_ageInput
         self.max_age = max_ageInput
@@ -73,41 +121,7 @@ def initialize_population(Config, popu,
         lower and upper bounds of y axis
     '''
 
-    #initialize population matrix
-    population = np.zeros((Config.pop_size, 15))
-
-    #initalize unique IDs
-    population[:,0] = [x for x in range(Config.pop_size)]
-
-    #initialize random coordinates
-    population[:,1] = np.random.uniform(low = xbounds[0] + 0.05, high = xbounds[1] - 0.05, 
-                                        size = (Config.pop_size,))
-    population[:,2] = np.random.uniform(low = ybounds[0] + 0.05, high = ybounds[1] - 0.05, 
-                                        size=(Config.pop_size,))
-
-    #initialize random headings -1 to 1
-    population[:,3] = np.random.normal(loc = 0, scale = 1/3, 
-                                       size=(Config.pop_size,))
-    population[:,4] = np.random.normal(loc = 0, scale = 1/3, 
-                                       size=(Config.pop_size,))
-
-    #initialize random speeds
-    population[:,5] = np.random.normal(Config.speed, Config.speed / 3)
-
-    #initalize ages
-    std_age = popu.getstd_age()
-    population[:,7] = np.int32(np.random.normal(loc = popu.getmean_age(), 
-                                                scale = std_age, 
-                                                size=(Config.pop_size,)))
-
-    population[:,7] = np.clip(population[:,7], a_min = 0, 
-                              a_max = popu.getmax_age()) #clip those younger than 0 years
-
-    #build recovery_vector
-    population[:,9] = np.random.normal(loc = 0.5, scale = 0.5 / 3, size=(Config.pop_size,))
-
     return population
-
 
 def initialize_destination_matrix(pop_size, total_destinations):
     '''intializes the destination matrix
